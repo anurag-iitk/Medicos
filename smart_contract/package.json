@@ -1,0 +1,22 @@
+{
+  "name": "medicos",
+  "version": "1.0.0",
+  "description": "A Healthcare leading organization. Provide security for database and tracking for sensitive data like: patient records and medicine tracking",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/anurag-iitk/Medicos.git"
+  },
+  "author": "anurag saini",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/anurag-iitk/Medicos/issues"
+  },
+  "homepage": "https://github.com/anurag-iitk/Medicos#readme",
+  "dependencies": {
+    "truffle": "^5.9.2"
+  }
+}
