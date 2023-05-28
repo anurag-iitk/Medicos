@@ -1,5 +1,5 @@
-const MedicosRecord = artifacts.require("MedicosRecord");
+const MedicosRecordManager = artifacts.require("MedicosRecordManager");
 
 module.exports = function (deployer) {
-  deployer.deploy(MedicosRecord);
+  deployer.deploy(MedicosRecordManager);
 };

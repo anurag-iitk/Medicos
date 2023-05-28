@@ -1,5 +1,5 @@
-const MedicosTracking = artifacts.require("MedicosTracking");
+const MedicosTrackingManager = artifacts.require("MedicosTrackingManager");
 
 module.exports = function (deployer) {
-  deployer.deploy(MedicosTracking);
+  deployer.deploy(MedicosTrackingManager);
 };
