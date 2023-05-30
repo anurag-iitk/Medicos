@@ -5,6 +5,11 @@ import "./DataTypesRecord.sol";
 import "./MedicosCommon.sol";
 
 contract MedicosRecordStorage is MedicosCommon {
+
+    event addAdmin(uint256 indexed adminAadhar, string name, string location);
+    event addDoctor(uint256 indexed doctorAadhar, string name, string location, string indexed speciality);
+    event addPatient(uint256 indexed patientAadhar, string name, uint256 indexed age, string location, string diagonsis);
+
     uint256 public adminCount = 0;
     uint256 public doctorCount = 0;
     uint256 public patientCount = 0;
@@ -61,6 +66,7 @@ contract MedicosRecordStorage is MedicosCommon {
             adminAadharMap[_adminAadhar] = admin;
             adminAddressMap[_adminAddress] = admin;
             adminReverseMap[_adminAadhar] = _adminAddress;
+            emit addAdmin(_adminAadhar, _name, _location);
         } else {
             // If exist, update details
             AdminDetail memory admin = adminAadharMap[_adminAadhar];
@@ -97,6 +103,7 @@ contract MedicosRecordStorage is MedicosCommon {
             doctorAadharMap[_doctorAadhar] = doctor;
             doctorAddressMap[_doctorAddress] = doctor;
             doctorReverseMap[_doctorAadhar] = _doctorAddress;
+            emit addDoctor(_doctorAadhar, _name, _location, _speciality);
         } else {
             DoctorDetail memory doctor = doctorAadharMap[_doctorAadhar];
             doctor.doctorAddress = _doctorAddress;
@@ -134,6 +141,7 @@ contract MedicosRecordStorage is MedicosCommon {
             patient.discharged = false;
             patientAadharMap[_patientAadhar] = patient;
             patientReverseMap[patientCount] = _patientAadhar;
+            emit addPatient(_patientAadhar, _name, _age, _location, _diagonsis);
         } else {
             PatientDetail memory patient = patientAadharMap[_patientAadhar];
             patient.name = _name;
