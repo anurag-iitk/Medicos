@@ -11,7 +11,7 @@ struct PatientDetail {
         uint256 weight;
         string bloodGroup;
         string diagonsis;
-        uint256[] gonetreatment;
+        uint256[] totalTreatments;
         bool discharged;
     }
 
@@ -24,6 +24,7 @@ struct PatientDetail {
         string location;
         uint256 treatmentDone;
         string[] certification;
+        uint256 totalTreatments;
     }
 
     struct AdminDetail{
@@ -39,7 +40,7 @@ struct PatientDetail {
         uint256 treatmentId;
         uint patientAadhar;
         uint[] doctorAadhar;
-        string prescription;
+        string[] prescription;
         string[] reports;
         uint256[] treatmentDone;
     }

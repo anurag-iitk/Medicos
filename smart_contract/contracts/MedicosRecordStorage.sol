@@ -5,10 +5,20 @@ import "./DataTypesRecord.sol";
 import "./MedicosCommon.sol";
 
 contract MedicosRecordStorage is MedicosCommon {
-
     event addAdmin(uint256 indexed adminAadhar, string name, string location);
-    event addDoctor(uint256 indexed doctorAadhar, string name, string location, string indexed speciality);
-    event addPatient(uint256 indexed patientAadhar, string name, uint256 indexed age, string location, string diagonsis);
+    event addDoctor(
+        uint256 indexed doctorAadhar,
+        string name,
+        string location,
+        string indexed speciality
+    );
+    event addPatient(
+        uint256 indexed patientAadhar,
+        string name,
+        uint256 indexed age,
+        string location,
+        string diagonsis
+    );
 
     uint256 public adminCount = 0;
     uint256 public doctorCount = 0;
@@ -97,7 +107,8 @@ contract MedicosRecordStorage is MedicosCommon {
                 _speciality,
                 _location,
                 0,
-                _certifications
+                _certifications,
+                0
             );
             doctorIdMap[doctorCount] = doctor;
             doctorAadharMap[_doctorAadhar] = doctor;
@@ -126,7 +137,7 @@ contract MedicosRecordStorage is MedicosCommon {
         string calldata _diagonsis
     ) public {
         bool isExisting = patientAadharMap[_patientAadhar].patientAadhar != 0;
-        if(!isExisting){
+        if (!isExisting) {
             patientCount += 1;
             PatientDetail memory patient;
             patient.patientAadhar = _patientAadhar;
@@ -154,14 +165,35 @@ contract MedicosRecordStorage is MedicosCommon {
             patient.diagonsis = _diagonsis;
         }
     }
- 
+
     function add_treatment(uint256 _patientAadhar) public {
         treatmentCount += 1;
         TreatmentDetail memory treatment;
         treatment.treatmentId = treatmentCount;
         treatment.patientAadhar = _patientAadhar;
         treatmentIdMap[treatmentCount] = treatment;
-        patientAadharMap[_patientAadhar].gonetreatment.push(treatmentCount);
+        patientAadharMap[_patientAadhar].totalTreatments.push(treatmentCount);
+    }
+
+    function add_doctor_with_treatment(
+        uint256 _treatmentId,
+        uint256 _doctorAadhar
+    ) public {
+        treatmentIdMap[_treatmentId].doctorAadhar.push(_doctorAadhar);
+    }
+
+    function add_precaution_with_treatment(
+        uint256 _treatmentId,
+        string memory _prescription
+    ) public {
+        treatmentIdMap[_treatmentId].prescription.push(_prescription);
+    }
+
+    function add_report_with_treatment(
+        uint256 _treatmentId,
+        string memory _report
+    ) public {
+        treatmentIdMap[_treatmentId].reports.push(_report);
     }
 
 }
