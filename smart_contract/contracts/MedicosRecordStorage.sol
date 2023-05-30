@@ -196,4 +196,46 @@ contract MedicosRecordStorage is MedicosCommon {
         treatmentIdMap[_treatmentId].reports.push(_report);
     }
 
+    function get_gone_treatments(
+        uint256 _patientAadhar
+    ) public view returns (uint256[] memory) {
+        return patientAadharMap[_patientAadhar].totalTreatments;
+    }
+
+    function get_treatment_doctors(
+        uint256 _treatmentId
+    ) public view returns (uint256[] memory) {
+        return treatmentIdMap[_treatmentId].doctorAadhar;
+    }
+
+    function get_prescreption_doctors(
+        uint256 _treatmentId
+    ) public view returns (string[] memory) {
+        return treatmentIdMap[_treatmentId].prescription;
+    }
+
+    function get_report_doctors(
+        uint256 _treatmentId
+    ) public view returns (string[] memory) {
+        return treatmentIdMap[_treatmentId].reports;
+    }
+
+    function get_admin_detail(
+        uint256 _adminAadhar
+    ) public view returns (AdminDetail memory) {
+        return adminAadharMap[_adminAadhar];
+    }
+
+    function get_doctor_detail(
+        uint256 _doctorAadhar
+    ) public view returns (DoctorDetail memory) {
+        return doctorAadharMap[_doctorAadhar];
+    }
+
+    function get_patient_detail(
+        uint256 _patientAadhar
+    ) public view returns (PatientDetail memory) {
+        return patientAadharMap[_patientAadhar];
+    }
+
 }
