@@ -3,8 +3,8 @@ pragma solidity ^0.8.0;
 
 struct Producer {
     uint producerId;
-    bytes32 registrationNumber;
     address producerAddress;
+    bytes32 registrationNumber;
     string companyName;
     string location;
 }
