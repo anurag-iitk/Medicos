@@ -29,10 +29,10 @@ struct PatientDetail {
 
     struct AdminDetail{
         uint256 adminId;
-        uint256 adminAadhar;
         address adminAddress;
-        string name;
-        string location;
+        // uint256 adminAadhar;
+        // string name;
+        // string location;
         // string role;
     }
 

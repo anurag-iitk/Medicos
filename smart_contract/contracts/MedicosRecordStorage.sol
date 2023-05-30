@@ -5,7 +5,8 @@ import "./DataTypesRecord.sol";
 import "./MedicosCommon.sol";
 
 contract MedicosRecordStorage is MedicosCommon {
-    event addAdmin(uint256 indexed adminAadhar, string name, string location);
+    // event addAdmin(uint256 indexed adminAadhar, string name, string location);
+    event addAdmin(uint256 indexed adminId);
     event addDoctor(
         uint256 indexed doctorAadhar,
         string name,
@@ -26,10 +27,8 @@ contract MedicosRecordStorage is MedicosCommon {
     uint256 public treatmentCount = 0;
 
     // Admin Mapping
-    mapping(uint256 => AdminDetail) public adminIdMap;
-    mapping(uint256 => AdminDetail) public adminAadharMap;
+    mapping(uint256 => address) public adminMap;
     mapping(address => AdminDetail) public adminAddressMap;
-    mapping(uint256 => address) public adminReverseMap;
 
     // Doctor Mapping
     mapping(uint256 => DoctorDetail) public doctorIdMap;
@@ -55,76 +54,48 @@ contract MedicosRecordStorage is MedicosCommon {
 
     constructor(address _superAdmin) MedicosCommon(_superAdmin) {}
 
-    function add_admin(
-        uint256 _adminAadhar,
-        address _adminAddress,
-        string calldata _name,
-        string calldata _location
-    ) public onlySuperAdmin {
-        bool isExisting = (adminAadharMap[_adminAadhar].adminAadhar != 0);
-        if (!isExisting) {
-            adminCount += 1;
-            require(_adminAadhar != 0, "Admin aadhar must be required");
-            AdminDetail memory admin = AdminDetail(
-                adminCount,
-                _adminAadhar,
-                _adminAddress,
-                _name,
-                _location
-            );
-            adminIdMap[adminCount] = admin;
-            adminAadharMap[_adminAadhar] = admin;
-            adminAddressMap[_adminAddress] = admin;
-            adminReverseMap[_adminAadhar] = _adminAddress;
-            emit addAdmin(_adminAadhar, _name, _location);
-        } else {
-            // If exist, update details
-            AdminDetail memory admin = adminAadharMap[_adminAadhar];
-            admin.adminAadhar = _adminAadhar;
-            admin.adminAddress = _adminAddress;
-            admin.name = _name;
-            admin.location = _location;
+    // In add admin function make one more function that takes direct admin object and make other function for save data 
+
+   
+
+    function create_admin(AdminDetail memory adminDetail) public {
+        if(is_admin_created(adminDetail)){
+            revert("Admin already created");
         }
+        save_admin_map(adminDetail);
+        // emit addAdmin(adminDetail.adminAadhar, adminDetail.name, adminDetail.location);
+        emit addAdmin(adminDetail.adminAadhar, adminDetail.name, adminDetail.location);
     }
 
-    function add_doctor(
-        uint256 _doctorAadhar,
-        address _doctorAddress,
-        string calldata _name,
-        string calldata _speciality,
-        string calldata _location,
-        string[] calldata _certifications
-    ) public {
-        bool isExisting = (doctorAadharMap[_doctorAadhar].doctorAadhar != 0);
-        if (!isExisting) {
-            doctorCount += 1;
-            require(_doctorAadhar != 0, "Doctor aadhar must be required");
-            DoctorDetail memory doctor = DoctorDetail(
-                doctorCount,
-                _doctorAadhar,
-                _doctorAddress,
-                _name,
-                _speciality,
-                _location,
-                0,
-                _certifications,
-                0
-            );
-            doctorIdMap[doctorCount] = doctor;
-            doctorAadharMap[_doctorAadhar] = doctor;
-            doctorAddressMap[_doctorAddress] = doctor;
-            doctorReverseMap[_doctorAadhar] = _doctorAddress;
-            emit addDoctor(_doctorAadhar, _name, _location, _speciality);
-        } else {
-            DoctorDetail memory doctor = doctorAadharMap[_doctorAadhar];
-            doctor.doctorAddress = _doctorAddress;
-            doctor.doctorAddress = _doctorAddress;
-            doctor.name = _name;
-            doctor.location = _location;
-            doctor.certification = _certifications;
+    function update_admin(AdminDetail memory adminDetail) public{
+        AdminDetail memory adminDetail = adminIdMap[adminDetail.adminId];
+        if(!is_admin_created(adminDetail)){
+            revert("No such admin found");
         }
+        adminIdMap[adminDetail.adminId] = adminDetail;
     }
 
+    function save_admin_map(AdminDetail memory adminDetail) internal {
+        AdminDetail storage admin = adminIdMap[adminDetail.adminId];
+        admin.adminId = adminDetail.adminId;
+        // admin.adminAadhar = adminDetail.adminAadhar;
+        admin.adminAddress = adminDetail.adminAddress;
+        // admin.name = adminDetail.name;
+        // admin.location = adminDetail.location;       
+        
+        adminIdMap[adminDetail.adminId] = adminDetail;
+        adminAddressMap[adminDetail.adminAadhar] = adminDetail;
+        adminReverseMap[adminDetail.adminAadhar] = adminDetail.adminAddress;
+    }
+
+    function is_admin_created(AdminDetail memory adminDetail) public view returns(bool) {
+        AdminDetail memory adminMap = adminIdMap[adminDetail.adminId];
+        if(adminMap.adminId == 0){
+            return false;
+        }
+        return true;
+    }
+    
     function add_patient(
         uint256 _patientAadhar,
         string calldata _name,
@@ -180,6 +151,7 @@ contract MedicosRecordStorage is MedicosCommon {
         uint256 _doctorAadhar
     ) public {
         treatmentIdMap[_treatmentId].doctorAadhar.push(_doctorAadhar);
+        doctorAadharMap[_doctorAadhar].totalTreatments += 1;
     }
 
     function add_precaution_with_treatment(
@@ -223,7 +195,7 @@ contract MedicosRecordStorage is MedicosCommon {
     function get_admin_detail(
         uint256 _adminAadhar
     ) public view returns (AdminDetail memory) {
-        return adminAadharMap[_adminAadhar];
+        return adminAddressMap[_adminAadhar];
     }
 
     function get_doctor_detail(
