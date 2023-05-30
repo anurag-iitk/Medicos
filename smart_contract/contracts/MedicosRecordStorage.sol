@@ -28,7 +28,8 @@ contract MedicosRecordStorage is MedicosCommon {
 
     // Admin Mapping
     mapping(uint256 => address) public adminMap;
-    mapping(address => AdminDetail) public adminAddressMap;
+    mapping(uint256 => AdminDetail) public adminIdMap;
+    mapping(address => AdminDetail) public adminReverseMap;
 
     // Doctor Mapping
     mapping(uint256 => DoctorDetail) public doctorIdMap;
@@ -64,7 +65,7 @@ contract MedicosRecordStorage is MedicosCommon {
         }
         save_admin_map(adminDetail);
         // emit addAdmin(adminDetail.adminAadhar, adminDetail.name, adminDetail.location);
-        emit addAdmin(adminDetail.adminAadhar, adminDetail.name, adminDetail.location);
+        emit addAdmin(adminDetail.adminId);
     }
 
     function update_admin(AdminDetail memory adminDetail) public{
@@ -72,7 +73,8 @@ contract MedicosRecordStorage is MedicosCommon {
         if(!is_admin_created(adminDetail)){
             revert("No such admin found");
         }
-        adminIdMap[adminDetail.adminId] = adminDetail;
+        adminAddressMap[msg.sender] = adminDetail;
+        adminMap[adminDetail.adminId] = msg.sender;
     }
 
     function save_admin_map(AdminDetail memory adminDetail) internal {
@@ -83,9 +85,8 @@ contract MedicosRecordStorage is MedicosCommon {
         // admin.name = adminDetail.name;
         // admin.location = adminDetail.location;       
         
-        adminIdMap[adminDetail.adminId] = adminDetail;
-        adminAddressMap[adminDetail.adminAadhar] = adminDetail;
-        adminReverseMap[adminDetail.adminAadhar] = adminDetail.adminAddress;
+        adminMap[adminDetail.adminId] = msg.sender;
+        adminAddressMap[adminDetail.adminAddress] = adminDetail;
     }
 
     function is_admin_created(AdminDetail memory adminDetail) public view returns(bool) {
