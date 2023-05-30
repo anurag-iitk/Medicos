@@ -2,33 +2,33 @@
 pragma solidity ^0.8.0;
 
 struct PatientDetail {
-        uint patientAadhar;
+        uint256 patientAadhar;
         string name;
-        uint age;
+        uint256 age;
         string dob;
         string location;
-        uint height;
-        uint weight;
+        uint256 height;
+        uint256 weight;
         string bloodGroup;
         string diagonsis;
-        uint[] treatmentDone;
+        uint256[] gonetreatment;
         bool discharged;
     }
 
     struct DoctorDetail {
-        uint doctorId;
-        uint doctorAadhar;
+        uint256 doctorId;
+        uint256 doctorAadhar;
         address doctorAddress;
         string name;
         string speciality;
         string location;
-        uint treatmentDone;
+        uint256 treatmentDone;
         string[] certification;
     }
 
     struct AdminDetail{
-        uint adminId;
-        uint adminAadhar;
+        uint256 adminId;
+        uint256 adminAadhar;
         address adminAddress;
         string name;
         string location;
@@ -36,9 +36,10 @@ struct PatientDetail {
     }
 
     struct TreatmentDetail{
-        uint treatmentId;
-        PatientDetail patientAadhar;
-        DoctorDetail doctorId;
-        string precautions;
-        uint[] treatmentDone;
+        uint256 treatmentId;
+        uint patientAadhar;
+        uint[] doctorAadhar;
+        string prescription;
+        string[] reports;
+        uint256[] treatmentDone;
     }
