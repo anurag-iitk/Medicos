@@ -37,16 +37,16 @@ contract MedicosRecordStorage is MedicosCommon {
 
 
     // Treatment Mapping
-    mapping(uint256 => TreatmentDetail) public treatmentIdMap;
+    mapping(uint256 => TreatmentDetail) public treatmentMap;
 
-    modifier onlySuperAdminAndAdmin() {
-        require(
-            adminAddressMap[msg.sender].adminAddress != address(0x0) &&
-                msg.sender == superAdmin,
-            "Only super admin and admin can call this function"
-        );
-        _;
-    }
+    // modifier onlySuperAdminAndAdmin() {
+    //     require(
+    //         adminAddressMap[msg.sender].adminAddress != address(0x0) &&
+    //             msg.sender == superAdmin,
+    //         "Only super admin and admin can call this function"
+    //     );
+    //     _;
+    // }
 
     constructor(address _superAdmin) MedicosCommon(_superAdmin) {}
 
@@ -85,7 +85,7 @@ contract MedicosRecordStorage is MedicosCommon {
         // admin.name = adminDetail.name;
         // admin.location = adminDetail.location;       
         
-        adminMap[adminDetail.adminId] = msg.sender;
+        adminMap[adminDetail.adminId] = adminDetail.adminAddress;
         adminIdMap[adminDetail.adminId] = adminDetail;
         adminAddressMap[adminDetail.adminAddress] = adminDetail;
     }
@@ -184,79 +184,86 @@ contract MedicosRecordStorage is MedicosCommon {
         return true;
     }
 
-
-
-    // function add_treatment(uint256 _patientAadhar) public {
-    //     treatmentCount += 1;
-    //     TreatmentDetail memory treatment;
-    //     treatment.treatmentId = treatmentCount;
-    //     treatment.patientAadhar = _patientAadhar;
-    //     treatmentIdMap[treatmentCount] = treatment;
-    //     patientAadharMap[_patientAadhar].totalTreatments.push(treatmentCount);
-    // }
+    function create_treatment(PatientDetail memory patientDetail) public{
+        treatmentCount += 1;
+        TreatmentDetail memory treatment;
+        treatment.treatmentId = treatmentCount;
+        treatment.patientId = patientDetail.patientId;
+        treatmentMap[treatmentCount] = treatment;
+        patientMap[patientDetail.patientId].totalTreatments.push(treatmentCount);
+    }
 
     function add_doctor_with_treatment(
-        uint256 _treatmentId,
-        uint256 _doctorAadhar
+        TreatmentDetail memory treatment,
+        uint256 _doctorId
     ) public {
-        treatmentIdMap[_treatmentId].doctorAadhar.push(_doctorAadhar);
-        doctorAadharMap[_doctorAadhar].totalTreatments += 1;
+        if(treatmentMap[treatment.treatmentId] == 0){
+            revert("Treatment not found");
+        }
+        treatmentMap[treatment.treatmentId].doctorAadhar.push(_doctorId);
+        doctorIdMap[_doctorId].totalTreatments += 1;
     }
 
     function add_precaution_with_treatment(
-        uint256 _treatmentId,
+        TreatmentDetail memory treatment,
         string memory _prescription
     ) public {
-        treatmentIdMap[_treatmentId].prescription.push(_prescription);
+        if(treatmentMap[treatment.treatmentId] == 0){
+            revert("Treatment not found");
+        }
+        treatmentMap[treatment.treatmentId].prescription.push(_prescription);
     }
 
     function add_report_with_treatment(
-        uint256 _treatmentId,
+        TreatmentDetail memory treatment,
         string memory _report
     ) public {
-        treatmentIdMap[_treatmentId].reports.push(_report);
+        if(treatmentMap[treatment.treatmentId] == 0){
+            revert("Treatment not found");
+        }
+        treatmentMap[treatment.treatmentId].reports.push(_report);
     }
 
-    function get_gone_treatments(
-        uint256 _patientAadhar
-    ) public view returns (uint256[] memory) {
-        return patientAadharMap[_patientAadhar].totalTreatments;
-    }
+    // function get_gone_treatments(
+    //     uint256 _patientAadhar
+    // ) public view returns (uint256[] memory) {
+    //     return patientAadharMap[_patientAadhar].totalTreatments;
+    // }
 
-    function get_treatment_doctors(
-        uint256 _treatmentId
-    ) public view returns (uint256[] memory) {
-        return treatmentIdMap[_treatmentId].doctorAadhar;
-    }
+    // function get_treatment_doctors(
+    //     uint256 _treatmentId
+    // ) public view returns (uint256[] memory) {
+    //     return treatmentMap[_treatmentId].doctorAadhar;
+    // }
 
-    function get_prescreption_doctors(
-        uint256 _treatmentId
-    ) public view returns (string[] memory) {
-        return treatmentIdMap[_treatmentId].prescription;
-    }
+    // function get_prescreption_doctors(
+    //     uint256 _treatmentId
+    // ) public view returns (string[] memory) {
+    //     return treatmentMap[_treatmentId].prescription;
+    // }
 
-    function get_report_doctors(
-        uint256 _treatmentId
-    ) public view returns (string[] memory) {
-        return treatmentIdMap[_treatmentId].reports;
-    }
+    // function get_report_doctors(
+    //     uint256 _treatmentId
+    // ) public view returns (string[] memory) {
+    //     return treatmentMap[_treatmentId].reports;
+    // }
 
-    function get_admin_detail(
-        uint256 _adminAadhar
-    ) public view returns (AdminDetail memory) {
-        return adminAddressMap[_adminAadhar];
-    }
+    // function get_admin_detail(
+    //     uint256 _adminAadhar
+    // ) public view returns (AdminDetail memory) {
+    //     return adminAddressMap[_adminAadhar];
+    // }
 
-    function get_doctor_detail(
-        uint256 _doctorAadhar
-    ) public view returns (DoctorDetail memory) {
-        return doctorAadharMap[_doctorAadhar];
-    }
+    // function get_doctor_detail(
+    //     uint256 _doctorAadhar
+    // ) public view returns (DoctorDetail memory) {
+    //     return doctorAadharMap[_doctorAadhar];
+    // }
 
-    function get_patient_detail(
-        uint256 _patientAadhar
-    ) public view returns (PatientDetail memory) {
-        return patientAadharMap[_patientAadhar];
-    }
+    // function get_patient_detail(
+    //     uint256 _patientAadhar
+    // ) public view returns (PatientDetail memory) {
+    //     return patientAadharMap[_patientAadhar];
+    // }
 
 }

@@ -40,9 +40,9 @@ struct PatientDetail {
 
     struct TreatmentDetail{
         uint256 treatmentId;
-        uint patientAadhar;
-        uint[] doctorAadhar;
-        string[] prescription;
+        uint patientId;
+        uint[] doctorIds;
+        string[] prescriptions;
         string[] reports;
         uint256[] treatmentDone;
     }
