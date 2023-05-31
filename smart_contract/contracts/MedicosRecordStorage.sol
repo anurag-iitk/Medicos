@@ -8,17 +8,12 @@ contract MedicosRecordStorage is MedicosCommon {
     // event addAdmin(uint256 indexed adminAadhar, string name, string location);
     event addAdmin(uint256 indexed adminId);
     event addDoctor(
-        uint256 indexed doctorAadhar,
-        string name,
-        string location,
-        string indexed speciality
+        uint256 indexed doctorId,
+        DoctorDetail doctorDetail
     );
     event addPatient(
-        uint256 indexed patientAadhar,
-        string name,
-        uint256 indexed age,
-        string location,
-        string diagonsis
+        uint256 indexed patientId,
+        PatientDetail patientDetail
     );
 
     uint256 public adminCount = 0;
@@ -29,17 +24,17 @@ contract MedicosRecordStorage is MedicosCommon {
     // Admin Mapping
     mapping(uint256 => address) public adminMap;
     mapping(uint256 => AdminDetail) public adminIdMap;
-    mapping(address => AdminDetail) public adminReverseMap;
+    mapping(address => AdminDetail) public adminAddressMap;
 
     // Doctor Mapping
+    mapping(uint256 => address) public doctorMap;
     mapping(uint256 => DoctorDetail) public doctorIdMap;
-    mapping(uint256 => DoctorDetail) public doctorAadharMap;
     mapping(address => DoctorDetail) public doctorAddressMap;
-    mapping(uint256 => address) public doctorReverseMap;
 
     // Patient Mapping
-    mapping(uint256 => PatientDetail) public patientAadharMap;
-    mapping(uint256 => uint256) public patientReverseMap;
+    mapping(uint256 => PatientDetail) public patientMap;
+    mapping(address => uint256) public patientReverseMap;
+
 
     // Treatment Mapping
     mapping(uint256 => TreatmentDetail) public treatmentIdMap;
@@ -55,10 +50,6 @@ contract MedicosRecordStorage is MedicosCommon {
 
     constructor(address _superAdmin) MedicosCommon(_superAdmin) {}
 
-    // In add admin function make one more function that takes direct admin object and make other function for save data 
-
-   
-
     function create_admin(AdminDetail memory adminDetail) public {
         if(is_admin_created(adminDetail)){
             revert("Admin already created");
@@ -73,8 +64,7 @@ contract MedicosRecordStorage is MedicosCommon {
         if(!is_admin_created(adminDetail)){
             revert("No such admin found");
         }
-        adminAddressMap[msg.sender] = adminDetail;
-        adminMap[adminDetail.adminId] = msg.sender;
+        save_admin_map(adminDetail);
     }
 
     function save_admin_map(AdminDetail memory adminDetail) internal {
@@ -86,6 +76,7 @@ contract MedicosRecordStorage is MedicosCommon {
         // admin.location = adminDetail.location;       
         
         adminMap[adminDetail.adminId] = msg.sender;
+        adminIdMap[adminDetail.adminId] = adminDetail;
         adminAddressMap[adminDetail.adminAddress] = adminDetail;
     }
 
@@ -96,56 +87,93 @@ contract MedicosRecordStorage is MedicosCommon {
         }
         return true;
     }
-    
-    function add_patient(
-        uint256 _patientAadhar,
-        string calldata _name,
-        uint256 _age,
-        string calldata _dob,
-        string calldata _location,
-        uint256 _height,
-        uint256 _weight,
-        string calldata _bloodGroup,
-        string calldata _diagonsis
-    ) public {
-        bool isExisting = patientAadharMap[_patientAadhar].patientAadhar != 0;
-        if (!isExisting) {
-            patientCount += 1;
-            PatientDetail memory patient;
-            patient.patientAadhar = _patientAadhar;
-            patient.name = _name;
-            patient.age = _age;
-            patient.dob = _dob;
-            patient.location = _location;
-            patient.height = _height;
-            patient.weight = _weight;
-            patient.bloodGroup = _bloodGroup;
-            patient.diagonsis = _diagonsis;
-            patient.discharged = false;
-            patientAadharMap[_patientAadhar] = patient;
-            patientReverseMap[patientCount] = _patientAadhar;
-            emit addPatient(_patientAadhar, _name, _age, _location, _diagonsis);
-        } else {
-            PatientDetail memory patient = patientAadharMap[_patientAadhar];
-            patient.name = _name;
-            patient.age = _age;
-            patient.dob = _dob;
-            patient.location = _location;
-            patient.height = _height;
-            patient.weight = _weight;
-            patient.bloodGroup = _bloodGroup;
-            patient.diagonsis = _diagonsis;
+
+    function add_doctor(DoctorDetail memory doctorDetail) public {
+        AdminDetail memory admin = adminIdMap[doctorDetail.doctorId];
+        if(is_doctor_created(doctorDetail.doctorId)){
+            revert("Admin already created");
         }
+        save_doctor_map(doctorDetail);
+        emit add_doctor(doctorDetail.doctorId, doctorDetail);
     }
 
-    function add_treatment(uint256 _patientAadhar) public {
-        treatmentCount += 1;
-        TreatmentDetail memory treatment;
-        treatment.treatmentId = treatmentCount;
-        treatment.patientAadhar = _patientAadhar;
-        treatmentIdMap[treatmentCount] = treatment;
-        patientAadharMap[_patientAadhar].totalTreatments.push(treatmentCount);
+    function update_doctor(DoctorDetail memory doctorDetail) public {
+        DoctorDetail memory doctor = doctorIdMap[doctorDetail.doctorId];
+        if(!is_doctor_created(doctorDetail)){
+            revert("No such doctor found");
+        }
+        doctorIdMap[doctorDetail.doctorId] = doctor;
+        doctorMap[doctorDetail.doctorId] = doctorDetail.doctorAddress;
+        doctorAddressMap[doctorDetail.doctorAddress] = doctorDetail;
     }
+
+    function save_doctor_map(DoctorDetail memory doctorDetail) internal {
+        DoctorDetail storage doctor = doctorIdMap[doctorDetail.doctorId];
+        doctor.doctorIdName = doctorDetail.doctorIdName;
+        doctor.doctorId = doctorDetail.doctorId;
+        doctor.doctorAddress = doctorDetail.doctorAddress;
+        doctor.treatmentDone = doctorDetail.treatmentDone;
+        doctor.certifications.push(doctorDetail.certifications);
+
+        doctorIdMap[doctorDetail.doctorId] = doctor;
+        doctorMap[doctorDetail.doctorId] = doctorDetail.doctorAddress;
+        doctorAddressMap[doctorDetail.doctorAddress] = doctorDetail;
+    }
+
+    function is_doctor_created(DoctorDetail memory doctorDetail) public {
+        DoctorDetail memory doctorMap = doctorIdMap[doctorDetail].doctorId;
+        if(doctorMap.doctorId == 0){
+            return false;
+        }
+        return true;
+    }
+
+    function create_patient(PatientDetail memory patientDetail) public {
+        PatientDetail memory patient = patientMap[patientDetail.patientId];
+        if(is_patient_created(patientDetail)){
+            revert("Patient already created");
+        }
+        save_patient_map(patientDetail);
+        emit addPatient(patientDetail.patientId, patientDetail);
+    }
+
+    function update_patient(PatientDetail memory patientDetail) public {
+        PatientDetail memory patient = patientMap[patientDetail.patientId];
+        if(!is_patient_created(patientDetail)){
+            revert("No such patient found");
+        }
+        save_patient_map(patientDetail);
+    }
+
+    function save_patient_map(PatientDetail memory patientDetail) internal {
+        PatientDetail storage patient = patientMap[patientDetail.patientId];
+        patient.patientIdName = patientDetail.patientIdName;
+        patient.patientId = patientDetail.patientId;
+        patient.patientAddress = patientDetail.patientAddress;
+        patient.discharged = false;
+
+        patientMap[patientDetail.patientId] = patient;        
+        patientReverseMap[patientDetail.patientAddress] = patientDetail.patientId;
+    }
+
+    function is_patient_created(PatientDetail memory patientDetail) public view returns(bool){
+        PatientDetail memory patientMap = patientMap[patientDetail.patientId];
+        if(patientMap.patientId == 0){
+            return false;
+        }
+        return true;
+    }
+
+
+
+    // function add_treatment(uint256 _patientAadhar) public {
+    //     treatmentCount += 1;
+    //     TreatmentDetail memory treatment;
+    //     treatment.treatmentId = treatmentCount;
+    //     treatment.patientAadhar = _patientAadhar;
+    //     treatmentIdMap[treatmentCount] = treatment;
+    //     patientAadharMap[_patientAadhar].totalTreatments.push(treatmentCount);
+    // }
 
     function add_doctor_with_treatment(
         uint256 _treatmentId,
