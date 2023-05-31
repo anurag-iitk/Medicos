@@ -224,46 +224,46 @@ contract MedicosRecordStorage is MedicosCommon {
         treatmentMap[treatment.treatmentId].reports.push(_report);
     }
 
-    // function get_gone_treatments(
-    //     uint256 _patientAadhar
-    // ) public view returns (uint256[] memory) {
-    //     return patientAadharMap[_patientAadhar].totalTreatments;
-    // }
+    function get_gone_treatments(
+        uint256 _patientId
+    ) public view returns (uint256[] memory) {
+        return patientMap[_patientId].totalTreatments;
+    }
 
-    // function get_treatment_doctors(
-    //     uint256 _treatmentId
-    // ) public view returns (uint256[] memory) {
-    //     return treatmentMap[_treatmentId].doctorAadhar;
-    // }
+    function get_treatment_doctors(
+        uint256 _treatmentId
+    ) public view returns (uint256[] memory) {
+        return treatmentMap[_treatmentId].doctorId;
+    }
 
-    // function get_prescreption_doctors(
-    //     uint256 _treatmentId
-    // ) public view returns (string[] memory) {
-    //     return treatmentMap[_treatmentId].prescription;
-    // }
+    function get_prescreption_doctors(
+        uint256 _treatmentId
+    ) public view returns (string[] memory) {
+        return treatmentMap[_treatmentId].prescription;
+    }
 
-    // function get_report_doctors(
-    //     uint256 _treatmentId
-    // ) public view returns (string[] memory) {
-    //     return treatmentMap[_treatmentId].reports;
-    // }
+    function get_report_doctors(
+        uint256 _treatmentId
+    ) public view returns (string[] memory) {
+        return treatmentMap[_treatmentId].reports;
+    }
 
-    // function get_admin_detail(
-    //     uint256 _adminAadhar
-    // ) public view returns (AdminDetail memory) {
-    //     return adminAddressMap[_adminAadhar];
-    // }
+    function get_admin_detail(
+        uint256 _adminId
+    ) public view returns (AdminDetail memory) {
+        return adminAddressMap[_adminId];
+    }
 
-    // function get_doctor_detail(
-    //     uint256 _doctorAadhar
-    // ) public view returns (DoctorDetail memory) {
-    //     return doctorAadharMap[_doctorAadhar];
-    // }
+    function get_doctor_detail(
+        uint256 _doctorId
+    ) public view returns (DoctorDetail memory) {
+        return doctorIdMap[_doctorId];
+    }
 
-    // function get_patient_detail(
-    //     uint256 _patientAadhar
-    // ) public view returns (PatientDetail memory) {
-    //     return patientAadharMap[_patientAadhar];
-    // }
+    function get_patient_detail(
+        uint256 _patientId
+    ) public view returns (PatientDetail memory) {
+        return patientMap[_patientId];
+    }
 
 }
