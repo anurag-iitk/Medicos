@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity >=0.4.22 <0.9.0;
 
-import "./DataTypesRecord.sol";
+import "./DataTypes.sol";
 import "./MedicosCommon.sol";
 
 contract MedicosRecordStorage is MedicosCommon {
@@ -262,8 +262,9 @@ contract MedicosRecordStorage is MedicosCommon {
 
     function get_patient_detail(
         uint256 _patientId
-    ) public view returns (PatientDetail memory) {
-        return patientMap[_patientId];
+    ) public view returns (PatientDetail memory patient) {
+        PatientDetail memory patient = patientMap[_patientId];
+        return patientMap[patient.patientId];
     }
 
 }
