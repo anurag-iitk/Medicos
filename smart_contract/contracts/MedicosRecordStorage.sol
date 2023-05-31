@@ -67,6 +67,16 @@ contract MedicosRecordStorage is MedicosCommon {
         save_admin_map(adminDetail);
     }
 
+    function delete_admin(AdminDetail memory adminDetail) public {
+        AdminDetail memory admin = adminIdMap[adminDetail.adminId];
+        if(!is_admin_created(adminDetail)){
+            revert("No such found found");
+        }
+        delete adminIdMap[adminDetail.adminId];
+        delete adminIdMap[adminDetail.adminId];
+        delete adminAddressMap[adminDetail.adminAddress];
+    }
+
     function save_admin_map(AdminDetail memory adminDetail) internal {
         AdminDetail storage admin = adminIdMap[adminDetail.adminId];
         admin.adminId = adminDetail.adminId;
@@ -105,6 +115,16 @@ contract MedicosRecordStorage is MedicosCommon {
         doctorIdMap[doctorDetail.doctorId] = doctor;
         doctorMap[doctorDetail.doctorId] = doctorDetail.doctorAddress;
         doctorAddressMap[doctorDetail.doctorAddress] = doctorDetail;
+    }
+
+    function delete_doctor(DoctorDetail memory doctorDetail) public {
+        DoctorDetail memory doctor = doctorIdMap[doctorDetail.doctorId];
+        if(!is_doctor_created(doctorDetail)){
+            revert("No such doctor found");
+        }
+        delete doctorIdMap[doctorDetail.doctorId];
+        delete doctorMap[doctorDetail.doctorId];
+        delete doctorAddressMap[doctorDetail.doctorAddress];
     }
 
     function save_doctor_map(DoctorDetail memory doctorDetail) internal {
