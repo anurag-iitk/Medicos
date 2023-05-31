@@ -98,13 +98,13 @@ contract MedicosRecordStorage is MedicosCommon {
         return true;
     }
 
-    function add_doctor(DoctorDetail memory doctorDetail) public {
-        AdminDetail memory admin = adminIdMap[doctorDetail.doctorId];
-        if(is_doctor_created(doctorDetail.doctorId)){
+    function create_doctor(DoctorDetail memory doctorDetail) public {
+        DoctorDetail memory doctor = doctorIdMap[doctorDetail.doctorId];
+        if(is_doctor_created(doctorDetail)){
             revert("Admin already created");
         }
         save_doctor_map(doctorDetail);
-        emit add_doctor(doctorDetail.doctorId, doctorDetail);
+        emit addDoctor(doctorDetail.doctorId, doctorDetail);
     }
 
     function update_doctor(DoctorDetail memory doctorDetail) public {
@@ -133,15 +133,15 @@ contract MedicosRecordStorage is MedicosCommon {
         doctor.doctorId = doctorDetail.doctorId;
         doctor.doctorAddress = doctorDetail.doctorAddress;
         doctor.treatmentDone = doctorDetail.treatmentDone;
-        doctor.certifications.push(doctorDetail.certifications);
+        // doctor.certifications.push(doctorDetail.certifications);
 
         doctorIdMap[doctorDetail.doctorId] = doctor;
         doctorMap[doctorDetail.doctorId] = doctorDetail.doctorAddress;
         doctorAddressMap[doctorDetail.doctorAddress] = doctorDetail;
     }
 
-    function is_doctor_created(DoctorDetail memory doctorDetail) public {
-        DoctorDetail memory doctorMap = doctorIdMap[doctorDetail].doctorId;
+    function is_doctor_created(DoctorDetail memory doctorDetail) public view returns(bool){
+        DoctorDetail memory doctorMap = doctorIdMap[doctorDetail.doctorId];
         if(doctorMap.doctorId == 0){
             return false;
         }
@@ -197,30 +197,30 @@ contract MedicosRecordStorage is MedicosCommon {
         TreatmentDetail memory treatment,
         uint256 _doctorId
     ) public {
-        if(treatmentMap[treatment.treatmentId] == 0){
-            revert("Treatment not found");
-        }
-        treatmentMap[treatment.treatmentId].doctorAadhar.push(_doctorId);
-        doctorIdMap[_doctorId].totalTreatments += 1;
+        // if(treatmentMap[treatment.treatmentId] == 0){
+        //     revert("Treatment not found");
+        // }
+        treatmentMap[treatment.treatmentId].doctorIds.push(_doctorId);
+        doctorIdMap[_doctorId].treatmentDone += 1;
     }
 
     function add_precaution_with_treatment(
         TreatmentDetail memory treatment,
         string memory _prescription
     ) public {
-        if(treatmentMap[treatment.treatmentId] == 0){
-            revert("Treatment not found");
-        }
-        treatmentMap[treatment.treatmentId].prescription.push(_prescription);
+        // if(treatmentMap[treatment.treatmentId] == 0){
+        //     revert("Treatment not found");
+        // }
+        treatmentMap[treatment.treatmentId].prescriptions.push(_prescription);
     }
 
     function add_report_with_treatment(
         TreatmentDetail memory treatment,
         string memory _report
     ) public {
-        if(treatmentMap[treatment.treatmentId] == 0){
-            revert("Treatment not found");
-        }
+        // if(treatmentMap[treatment.treatmentId] == 0){
+        //     revert("Treatment not found");
+        // }
         treatmentMap[treatment.treatmentId].reports.push(_report);
     }
 
@@ -233,13 +233,13 @@ contract MedicosRecordStorage is MedicosCommon {
     function get_treatment_doctors(
         uint256 _treatmentId
     ) public view returns (uint256[] memory) {
-        return treatmentMap[_treatmentId].doctorId;
+        return treatmentMap[_treatmentId].doctorIds;
     }
 
     function get_prescreption_doctors(
         uint256 _treatmentId
     ) public view returns (string[] memory) {
-        return treatmentMap[_treatmentId].prescription;
+        return treatmentMap[_treatmentId].prescriptions;
     }
 
     function get_report_doctors(
@@ -251,7 +251,7 @@ contract MedicosRecordStorage is MedicosCommon {
     function get_admin_detail(
         uint256 _adminId
     ) public view returns (AdminDetail memory) {
-        return adminAddressMap[_adminId];
+        return adminIdMap[_adminId];
     }
 
     function get_doctor_detail(
